@@ -1,4 +1,3 @@
-// src/app/products/page.tsx
 'use client'
 import { ProductList } from '@/app/components/ProductList'
 import { useProductStore } from '@/app/store/useProductStore'
@@ -136,7 +135,7 @@ export default function ProductsPage() {
 				<>
 					<ProductList products={paginatedProducts} />
 					{filteredProducts.length > 0 && (
-						<Stack spacing={2} className='mt-4 flex justify-center items-center h-100'>
+						<Stack spacing={2} className='mt-4 flex justify-center items-center p-10'>
 							<Pagination
 								count={totalPages}
 								page={currentPage}

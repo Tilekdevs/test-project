@@ -23,6 +23,8 @@ type ProductState = {
   setPage: (page: number) => void;
 };
 
+const FAKE_STORE_API_URL = 'https://fakestoreapi.com/products';
+
 export const useProductStore = create<ProductState>()(
   persist(
     (set, get) => ({
@@ -32,9 +34,12 @@ export const useProductStore = create<ProductState>()(
       fetchProducts: async () => {
         const currentProducts = get().products;
         if (currentProducts.length === 0) {
-          console.log('Загружаем продукты с API, так как store пуст');
-          const res = await fetch('https://fakestoreapi.com/products');
-          const data = await res.json();
+          console.log('Загружаем продукты с Fake Store API, так как store пуст');
+          const response = await fetch(FAKE_STORE_API_URL);
+          if (!response.ok) {
+            throw new Error('Failed to fetch products from Fake Store API');
+          }
+          const data = await response.json();
           const newProducts = data.map((p: Product) => ({ ...p, isLiked: false }));
           set({ products: newProducts });
         }
@@ -65,7 +70,7 @@ export const useProductStore = create<ProductState>()(
           return { products: newProducts };
         }),
       setPage: (page) =>
-        set((state) => {
+        set(() => {
           return { currentPage: page };
         }),
     }),

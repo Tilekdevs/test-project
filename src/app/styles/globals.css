@@ -121,6 +121,10 @@
   }
 }
 
+body {
+  overflow-y: hidden;
+}
+
 button {
   cursor: pointer;
 }

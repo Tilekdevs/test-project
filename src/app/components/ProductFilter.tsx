@@ -1,10 +1,10 @@
 'use client'
-import { useProductStore } from '@/app/store/useProductStore'
+// import { useProductStore } from '@/app/store/useProductStore'
 import { useState } from 'react'
 
 export const ProductFilter = () => {
 	const [filter, setFilter] = useState<'all' | 'liked'>('all')
-	const { products } = useProductStore()
+	// const { products } = useProductStore()
 
 	return (
 		<select

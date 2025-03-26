@@ -1,24 +1,52 @@
-'use client';
-import { useProductStore } from '@/app/store/useProductStore';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { Product } from '@/app/store/useProductStore';
+import ProductDetails from './ProductDetails';
 
-export default function ProductPage() {
-  const { id } = useParams(); 
-  const { products } = useProductStore();
-  const product = products.find((p) => p.id === Number(id));
+type FakeStoreApiProduct = {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  price: number;
+  category: string;
+  rating: {
+    rate: number;
+    count: number;
+  };
+};
 
-  if (!product) return <div>Продукт не найден</div>;
+const getProducts = async () => {
+  const response = await fetch('https://fakestoreapi.com/products');
+  if (!response.ok) {
+    throw new Error('Failed to fetch products');
+  }
+  const data: FakeStoreApiProduct[] = await response.json();
+  return data.map((item) => ({
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    image: item.image,
+    price: item.price,
+    category: item.category,
+    isLiked: false,
+  })) as Product[];
+};
 
-  return (
-    <div className="container mx-auto p-4">
-      <Link href="/products" className="text-blue-500 mb-4 inline-block">
-        Назад к списку
-      </Link>
-      <img src={product.image} alt={product.title} className="h-64 object-contain" />
-      <h1 className="text-2xl">{product.title}</h1>
-      <p>{product.description}</p>
-      <p className="text-lg font-bold">${product.price}</p>
-    </div>
-  );
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((product) => ({
+    id: product.id.toString(),
+  }));
 }
+
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const products = await getProducts();
+  const product = products.find((p) => p.id === Number(resolvedParams.id));
+
+  if (!product) {
+    return <div className="container mx-auto p-4">Продукт не найден</div>;
+  }
+
+  return <ProductDetails product={product} />;
+}
+
