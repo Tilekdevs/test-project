@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import EditProductForm from '@/app/edit-product/[id]/EditFormProduct';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type ProductDetailsProps = {
   product: Product;
@@ -14,11 +14,26 @@ export default function ProductDetails({ product: initialProduct }: ProductDetai
   const searchParams = useSearchParams();
   const isEditing = searchParams.get('edit') === 'true';
   const { products, fetchProducts } = useProductStore();
+  const [loading, setLoading] = useState(true);
+  const [error] = useState<string | null>(null);
   const product = products.find((p) => p.id === initialProduct.id) || initialProduct;
 
   useEffect(() => {
-    fetchProducts();
+    const loadProducts = async () => {
+      setLoading(true);
+      await fetchProducts();
+      setLoading(false);
+    };
+    loadProducts();
   }, [fetchProducts]);
+
+  if (loading) {
+    return <div>Загрузка...</div>;
+  }
+
+  if (error) {
+    return <div className="container mx-auto p-4">{error}</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
