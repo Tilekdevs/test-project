@@ -1,5 +1,6 @@
 import { Product } from '@/app/store/useProductStore';
-import ProductDetails from './ProductDetails';
+import ProductDetails from './ProductDetails'; 
+import { Suspense } from 'react';
 
 type FakeStoreApiProduct = {
   id: number;
@@ -47,6 +48,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     return <div className="container mx-auto p-4">Продукт не найден</div>;
   }
 
-  return <ProductDetails product={product} />;
+  return (
+    <Suspense fallback={<div>Loading product page...</div>}>
+      <ProductDetails product={product} />
+    </Suspense>
+  );
 }
-

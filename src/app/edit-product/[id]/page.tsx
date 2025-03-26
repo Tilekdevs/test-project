@@ -1,5 +1,6 @@
 import { Product } from '@/app/store/useProductStore';
-import ProductDetails from '@/app/products/[id]/ProductDetails';
+import EditFormProduct from './EditFormProduct'; 
+import { Suspense } from 'react';
 
 type FakeStoreApiProduct = {
   id: number;
@@ -38,7 +39,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const products = await getProducts();
   const product = products.find((p) => p.id === Number(resolvedParams.id));
@@ -47,5 +48,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     return <div className="container mx-auto p-4">Продукт не найден</div>;
   }
 
-  return <ProductDetails product={product} />;
+  return (
+    <Suspense fallback={<div>Loading edit page...</div>}>
+      <EditFormProduct product={product} />
+    </Suspense>
+  );
 }
